@@ -1,0 +1,55 @@
+package go_open_meteo
+
+import (
+	"encoding/json"
+	"fmt"
+	go_http "github.com/saktibimantara/go-http"
+)
+
+type GoOpenMeteo struct {
+	config  IConfig
+	callApi go_http.CallAPI
+}
+
+func New(config *Config) *GoOpenMeteo {
+	caller := go_http.New(&go_http.Config{})
+	return &GoOpenMeteo{config: config, callApi: caller}
+}
+
+type IGoOpenMeteo interface {
+	Forecast(param IForecastParams) (*Response, error)
+}
+
+func (g *GoOpenMeteo) Forecast(param IForecastParams) (*Response, error) {
+	url := g.config.GetForecastURL() + "?" + param.GetParams()
+	fmt.Println(url)
+	callResp, err := g.callApi.Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	if callResp.Code != 200 {
+		return nil, fmt.Errorf("error code: %d", callResp.Code)
+	}
+
+	var resp Response
+
+	err = json.Unmarshal(callResp.Data, &resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp, nil
+}
+
+func Call() {
+
+	caller := go_http.New(&go_http.Config{})
+	data, err := caller.Get("https://http.cat/200")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(string(data.Data))
+}
