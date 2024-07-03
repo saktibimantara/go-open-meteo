@@ -41,15 +41,3 @@ func (g *GoOpenMeteo) Forecast(param IForecastParams) (*Response, error) {
 
 	return &resp, nil
 }
-
-func Call() {
-
-	caller := go_http.New(&go_http.Config{})
-	data, err := caller.Get("https://http.cat/200")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	fmt.Println(string(data.Data))
-}
