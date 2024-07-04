@@ -10,7 +10,17 @@ type WeatherData struct {
 	forecastResp *ForecastResponse
 }
 
-func (w WeatherData) GetForecastResponse() *ForecastResponse {
+func NewWeatherData() *WeatherData {
+	return &WeatherData{}
+}
+
+func (w *WeatherData) SetForecastResponse(resp *ForecastResponse) *WeatherData {
+	w.forecastResp = resp
+
+	return w
+}
+
+func (w *WeatherData) GetForecastResponse() *ForecastResponse {
 	return w.forecastResp
 }
 

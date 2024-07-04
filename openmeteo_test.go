@@ -33,9 +33,9 @@ func TestForecast(t *testing.T) {
 		return
 	}
 
-	wd := WeatherData{forecastResp: resp}
+	wd := NewWeatherData().SetForecastResponse(resp)
 
-	wp := NewWeatherProcessor(&wd)
+	wp := NewWeatherProcessor(wd)
 
 	nf, err := wp.FindNearestForecastByTime(time.Now())
 
