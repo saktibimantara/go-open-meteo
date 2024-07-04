@@ -2,6 +2,7 @@ package go_open_meteo
 
 import (
 	"testing"
+	"time"
 )
 
 func TestForecast(t *testing.T) {
@@ -32,6 +33,18 @@ func TestForecast(t *testing.T) {
 		return
 	}
 
-	t.Log(resp)
+	wd := WeatherData{forecastResp: resp}
+
+	wp := NewWeatherProcessor(&wd)
+
+	nf, err := wp.FindNearestForecastByTime(time.Now())
+
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+		return
+	}
+
+	t.Log(nf)
 
 }

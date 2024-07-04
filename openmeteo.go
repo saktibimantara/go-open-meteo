@@ -17,10 +17,10 @@ func New(config *Config) *GoOpenMeteo {
 }
 
 type IGoOpenMeteo interface {
-	Forecast(param IForecastParams) (*Response, error)
+	Forecast(param IForecastParams) (*ForecastResponse, error)
 }
 
-func (g *GoOpenMeteo) Forecast(param IForecastParams) (*Response, error) {
+func (g *GoOpenMeteo) Forecast(param IForecastParams) (*ForecastResponse, error) {
 	url := g.config.GetForecastURL() + "?" + param.GetParams()
 	fmt.Println(url)
 	callResp, err := g.callApi.Get(url)
@@ -32,7 +32,7 @@ func (g *GoOpenMeteo) Forecast(param IForecastParams) (*Response, error) {
 		return nil, fmt.Errorf("error code: %d", callResp.Code)
 	}
 
-	var resp Response
+	var resp ForecastResponse
 
 	err = json.Unmarshal(callResp.Data, &resp)
 	if err != nil {
