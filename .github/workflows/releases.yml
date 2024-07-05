@@ -24,6 +24,6 @@ jobs:
             - Second Change
           draft: false
           prerelease: false
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_TOKEN }}
           generate_release_notes: true
           make_latest: true
