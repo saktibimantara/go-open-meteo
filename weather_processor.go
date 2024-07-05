@@ -4,10 +4,12 @@ import "time"
 
 type IWeatherData interface {
 	GetForecastResponse() *ForecastResponse
+	GetAQIForecastResponse() *AQIResponse
 }
 
 type WeatherData struct {
-	forecastResp *ForecastResponse
+	forecastResp    *ForecastResponse
+	aqiForecastResp *AQIResponse
 }
 
 func NewWeatherData() *WeatherData {
@@ -20,12 +22,23 @@ func (w *WeatherData) SetForecastResponse(resp *ForecastResponse) *WeatherData {
 	return w
 }
 
+func (w *WeatherData) SetAQIForecastResponse(resp *AQIResponse) *WeatherData {
+	w.aqiForecastResp = resp
+
+	return w
+}
+
 func (w *WeatherData) GetForecastResponse() *ForecastResponse {
 	return w.forecastResp
 }
 
+func (w *WeatherData) GetAQIForecastResponse() *AQIResponse {
+	return w.aqiForecastResp
+}
+
 type WeatherProcessor struct {
 	forecastResp *ForecastResponse
+	aqiResp      *AQIResponse
 }
 
 type NearestForecast struct {
@@ -33,11 +46,13 @@ type NearestForecast struct {
 	HourlyForecast     *NearestHourlyForecast
 	Minutely15Forecast *NearestMinute15Forecast
 	DailyForecast      *NearestDailyForecast
+	aqiHourlyForecast  *NearestAQIHourlyForecast
 }
 
 func NewWeatherProcessor(data IWeatherData) *WeatherProcessor {
 	return &WeatherProcessor{
 		forecastResp: data.GetForecastResponse(),
+		aqiResp:      data.GetAQIForecastResponse(),
 	}
 }
 
@@ -61,6 +76,22 @@ func (w *WeatherProcessor) FindNearestForecastByTime(dateTime time.Time) (*Neare
 
 	if w.forecastResp.Daily != nil {
 		nearestForecast.DailyForecast = w.forecastResp.FindNearestDailyResponse(dateTime)
+	}
+
+	return nearestForecast, nil
+}
+
+func (w *WeatherProcessor) FindNearestAQIForecastByTime(dateTime time.Time) (*NearestForecast, error) {
+	if w.aqiResp == nil {
+		return nil, ErrForecastResponseNil
+	}
+
+	nearestForecast := &NearestForecast{
+		DateTime: dateTime,
+	}
+
+	if w.aqiResp.Hourly != nil {
+		nearestForecast.aqiHourlyForecast = w.aqiResp.FindNearestAQIHourlyResponse(dateTime)
 	}
 
 	return nearestForecast, nil

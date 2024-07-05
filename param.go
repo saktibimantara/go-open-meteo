@@ -31,6 +31,14 @@ type ForecastParams struct {
 	dailyParam      []DailyParam
 }
 
+type AQIParams struct {
+	latitude     float64
+	longitude    float64
+	forecastDays int
+	pastDays     int
+	hourlyParam  []AQIParam
+}
+
 func (f ForecastParams) GetParams() string {
 	param := ""
 
@@ -144,6 +152,89 @@ func (fpb *ForecastParamsBuilder) Build() (ForecastParams, error) {
 	return fpb.forecastParams, nil
 }
 
+type AQIParamsBuilder struct {
+	aqiParams AQIParams
+}
+
+func NewAQIParamsBuilder() *AQIParamsBuilder {
+	return &AQIParamsBuilder{
+		aqiParams: AQIParams{},
+	}
+}
+
+func (apb *AQIParamsBuilder) AddHourlyParam(params ...AQIParam) *AQIParamsBuilder {
+	for _, param := range params {
+		apb.aqiParams.hourlyParam = append(apb.aqiParams.hourlyParam, param)
+	}
+	return apb
+}
+
+func (apb *AQIParamsBuilder) SetLatitude(latitude float64) *AQIParamsBuilder {
+	apb.aqiParams.latitude = latitude
+	return apb
+}
+
+func (apb *AQIParamsBuilder) SetLongitude(longitude float64) *AQIParamsBuilder {
+	apb.aqiParams.longitude = longitude
+	return apb
+}
+
+func (apb *AQIParamsBuilder) SetForecastDays(forecastDays int) *AQIParamsBuilder {
+	apb.aqiParams.forecastDays = forecastDays
+	return apb
+}
+
+func (apb *AQIParamsBuilder) SetPastDays(pastDays int) *AQIParamsBuilder {
+	apb.aqiParams.pastDays = pastDays
+	return apb
+}
+
+func (apb *AQIParamsBuilder) Build() (AQIParams, error) {
+	if apb.aqiParams.latitude == 0 {
+		return AQIParams{}, fmt.Errorf("latitude is required")
+	}
+
+	if apb.aqiParams.longitude == 0 {
+		return AQIParams{}, fmt.Errorf("longitude is required")
+	}
+
+	if apb.aqiParams.forecastDays > 7 {
+		return AQIParams{}, fmt.Errorf("forecast days must be less than 16")
+	}
+
+	if apb.aqiParams.pastDays > 92 {
+		return AQIParams{}, fmt.Errorf("past days must be less than 92")
+	}
+
+	return apb.aqiParams, nil
+
+}
+
+func (ap AQIParams) GetParams() string {
+	param := ""
+
+	param += fmt.Sprintf("latitude=%f&longitude=%f", ap.latitude, ap.longitude)
+
+	for i, p := range ap.hourlyParam {
+		if i == 0 {
+			param += "&hourly=" + string(p)
+			continue
+		}
+
+		param += "," + string(p)
+	}
+
+	if ap.forecastDays > 0 {
+		param += fmt.Sprintf("&forecast_days=%d", ap.forecastDays)
+	}
+
+	if ap.pastDays > 0 {
+		param += fmt.Sprintf("&past_days=%d", ap.pastDays)
+	}
+
+	return param
+}
+
 type HourlyParam string
 
 const (
@@ -254,4 +345,39 @@ const (
 	DailyEt0FaoEvapotranspiration     DailyParam = "et0_fao_evapotranspiration"
 	DailyUvIndexMax                   DailyParam = "uv_index_max"
 	DailyUvIndexClearSkyMax           DailyParam = "uv_index_clear_sky_max"
+)
+
+type AQIParam string
+
+const (
+	PM10                       AQIParam = "pm10"
+	PM2_5                      AQIParam = "pm2_5"
+	CarbonMonoxide             AQIParam = "carbon_monoxide"
+	NitrogenDioxide            AQIParam = "nitrogen_dioxide"
+	SulphurDioxide             AQIParam = "sulphur_dioxide"
+	Ozone                      AQIParam = "ozone"
+	Ammonia                    AQIParam = "ammonia"
+	AerosolOpticalDepth        AQIParam = "aerosol_optical_depth"
+	Dust                       AQIParam = "dust"
+	UVIndex                    AQIParam = "uv_index"
+	UVIndexClearSky            AQIParam = "uv_index_clear_sky"
+	AlderPollen                AQIParam = "alder_pollen"
+	BirchPollen                AQIParam = "birch_pollen"
+	GrassPollen                AQIParam = "grass_pollen"
+	MugwortPollen              AQIParam = "mugwort_pollen"
+	OlivePollen                AQIParam = "olive_pollen"
+	RagweedPollen              AQIParam = "ragweed_pollen"
+	EuropeanAQI                AQIParam = "european_aqi"
+	EuropeanAQIPM25            AQIParam = "european_aqi_pm2_5"
+	EuropeanAQIPM10            AQIParam = "european_aqi_pm10"
+	EuropeanAQINitrogenDioxide AQIParam = "european_aqi_nitrogen_dioxide"
+	EuropeanAQIOzone           AQIParam = "european_aqi_ozone"
+	EuropeanAQISulphurDioxide  AQIParam = "european_aqi_sulphur_dioxide"
+	USAQI                      AQIParam = "us_aqi"
+	USAQIPM25                  AQIParam = "us_aqi_pm2_5"
+	USAQIPM10                  AQIParam = "us_aqi_pm10"
+	USAQINitrogenDioxide       AQIParam = "us_aqi_nitrogen_dioxide"
+	USAQIOzone                 AQIParam = "us_aqi_ozone"
+	USAQISulphurDioxide        AQIParam = "us_aqi_sulphur_dioxide"
+	USAQICarbonMonoxide        AQIParam = "us_aqi_carbon_monoxide"
 )

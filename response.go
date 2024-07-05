@@ -11,11 +11,54 @@ type ForecastResponse struct {
 	Elevation            float64             `json:"elevation"`
 	Timezone             string              `json:"timezone"`
 	GenerationTimeMs     float64             `json:"generationtime_ms"`
-	UTCOffset            float64             `json:"utc_offset"`
+	UTCOffsetSeconds     int                 `json:"utc_offset"`
 	TimezoneAbbreviation string              `json:"timezone_abbreviation"`
 	Hourly               *HourlyResponse     `json:"hourly"`
 	Minutely15           *Minutely15Response `json:"minutely_15"`
 	Daily                *DailyResponse      `json:"daily"`
+}
+
+type AQIResponse struct {
+	Latitude         float64            `json:"latitude"`
+	Longitude        float64            `json:"longitude"`
+	Timezone         string             `json:"timezone"`
+	GenerationTimeMs float64            `json:"generationtime_ms"`
+	UTCOffsetSeconds int                `json:"utc_offset"`
+	Hourly           *AQIHourlyResponse `json:"hourly"`
+}
+
+type AQIHourlyResponse struct {
+	Time                       []CustomTime `json:"time"`
+	PM10                       []float64    `json:"pm10"`                          // μg/m³
+	PM2_5                      []float64    `json:"pm2_5"`                         // μg/m³
+	CarbonMonoxide             []float64    `json:"carbon_monoxide"`               // μg/m³
+	NitrogenDioxide            []float64    `json:"nitrogen_dioxide"`              // μg/m³
+	SulphurDioxide             []float64    `json:"sulphur_dioxide"`               // μg/m³
+	Ozone                      []float64    `json:"ozone"`                         // μg/m³
+	Ammonia                    []float64    `json:"ammonia"`                       // μg/m³
+	AerosolOpticalDepth        []float64    `json:"aerosol_optical_depth"`         // Dimensionless
+	Dust                       []float64    `json:"dust"`                          // μg/m³
+	UVIndex                    []float64    `json:"uv_index"`                      // Index
+	UVIndexClearSky            []float64    `json:"uv_index_clear_sky"`            // Index
+	AlderPollen                []float64    `json:"alder_pollen"`                  // Grains/m³
+	BirchPollen                []float64    `json:"birch_pollen"`                  // Grains/m³
+	GrassPollen                []float64    `json:"grass_pollen"`                  // Grains/m³
+	MugwortPollen              []float64    `json:"mugwort_pollen"`                // Grains/m³
+	OlivePollen                []float64    `json:"olive_pollen"`                  // Grains/m³
+	RagweedPollen              []float64    `json:"ragweed_pollen"`                // Grains/m³
+	EuropeanAQI                []float64    `json:"european_aqi"`                  // European AQI
+	EuropeanAQIPM25            []float64    `json:"european_aqi_pm2_5"`            // European AQI
+	EuropeanAQIPM10            []float64    `json:"european_aqi_pm10"`             // European AQI
+	EuropeanAQINitrogenDioxide []float64    `json:"european_aqi_nitrogen_dioxide"` // European AQI
+	EuropeanAQIOzone           []float64    `json:"european_aqi_ozone"`            // European AQI
+	EuropeanAQISulphurDioxide  []float64    `json:"european_aqi_sulphur_dioxide"`  // European AQI
+	USAQI                      []float64    `json:"us_aqi"`                        // U.S. AQI
+	USAQIPM25                  []float64    `json:"us_aqi_pm2_5"`                  // U.S. AQI
+	USAQIPM10                  []float64    `json:"us_aqi_pm10"`                   // U.S. AQI
+	USAQINitrogenDioxide       []float64    `json:"us_aqi_nitrogen_dioxide"`       // U.S. AQI
+	USAQIOzone                 []float64    `json:"us_aqi_ozone"`                  // U.S. AQI
+	USAQISulphurDioxide        []float64    `json:"us_aqi_sulphur_dioxide"`        // U.S. AQI
+	USAQICarbonMonoxide        []float64    `json:"us_aqi_carbon_monoxide"`        // U.S. AQI
 }
 
 type HourlyResponse struct {
@@ -248,6 +291,45 @@ func (f *ForecastResponse) FindNearestDailyResponse(dateTime time.Time) *Nearest
 		Et0FaoEvapotranspiration:     safeGetFloat64(daily.Et0FaoEvapotranspiration, closestIndex),
 		UvIndexMax:                   safeGetFloat64(daily.UvIndexMax, closestIndex),
 		UvIndexClearSkyMax:           safeGetFloat64(daily.UvIndexClearSkyMax, closestIndex),
+	}
+}
+
+func (a *AQIResponse) FindNearestAQIHourlyResponse(dateTime time.Time) *NearestAQIHourlyForecast {
+	hourly := a.Hourly
+	closestIndex := findClosestIndexByCustomTime(hourly.Time, dateTime)
+
+	return &NearestAQIHourlyForecast{
+		Time:                       &hourly.Time[closestIndex].Time,
+		PM10:                       safeGetFloat64(hourly.PM10, closestIndex),
+		PM2_5:                      safeGetFloat64(hourly.PM2_5, closestIndex),
+		CarbonMonoxide:             safeGetFloat64(hourly.CarbonMonoxide, closestIndex),
+		NitrogenDioxide:            safeGetFloat64(hourly.NitrogenDioxide, closestIndex),
+		SulphurDioxide:             safeGetFloat64(hourly.SulphurDioxide, closestIndex),
+		Ozone:                      safeGetFloat64(hourly.Ozone, closestIndex),
+		Ammonia:                    safeGetFloat64(hourly.Ammonia, closestIndex),
+		AerosolOpticalDepth:        safeGetFloat64(hourly.AerosolOpticalDepth, closestIndex),
+		Dust:                       safeGetFloat64(hourly.Dust, closestIndex),
+		UVIndex:                    safeGetFloat64(hourly.UVIndex, closestIndex),
+		UVIndexClearSky:            safeGetFloat64(hourly.UVIndexClearSky, closestIndex),
+		AlderPollen:                safeGetFloat64(hourly.AlderPollen, closestIndex),
+		BirchPollen:                safeGetFloat64(hourly.BirchPollen, closestIndex),
+		GrassPollen:                safeGetFloat64(hourly.GrassPollen, closestIndex),
+		MugwortPollen:              safeGetFloat64(hourly.MugwortPollen, closestIndex),
+		OlivePollen:                safeGetFloat64(hourly.OlivePollen, closestIndex),
+		RagweedPollen:              safeGetFloat64(hourly.RagweedPollen, closestIndex),
+		EuropeanAQI:                safeGetFloat64(hourly.EuropeanAQI, closestIndex),
+		EuropeanAQIPM25:            safeGetFloat64(hourly.EuropeanAQIPM25, closestIndex),
+		EuropeanAQIPM10:            safeGetFloat64(hourly.EuropeanAQIPM10, closestIndex),
+		EuropeanAQINitrogenDioxide: safeGetFloat64(hourly.EuropeanAQINitrogenDioxide, closestIndex),
+		EuropeanAQIOzone:           safeGetFloat64(hourly.EuropeanAQIOzone, closestIndex),
+		EuropeanAQISulphurDioxide:  safeGetFloat64(hourly.EuropeanAQISulphurDioxide, closestIndex),
+		USAQI:                      safeGetFloat64(hourly.USAQI, closestIndex),
+		USAQIPM25:                  safeGetFloat64(hourly.USAQIPM25, closestIndex),
+		USAQIPM10:                  safeGetFloat64(hourly.USAQIPM10, closestIndex),
+		USAQINitrogenDioxide:       safeGetFloat64(hourly.USAQINitrogenDioxide, closestIndex),
+		USAQIOzone:                 safeGetFloat64(hourly.USAQIOzone, closestIndex),
+		USAQISulphurDioxide:        safeGetFloat64(hourly.USAQISulphurDioxide, closestIndex),
+		USAQICarbonMonoxide:        safeGetFloat64(hourly.USAQICarbonMonoxide, closestIndex),
 	}
 }
 

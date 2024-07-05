@@ -1,1 +1,3 @@
-Update workflow to update release note
+## Changelogs
+
+1. Implement Get AQI Forecast API

@@ -1,5 +1,7 @@
 package go_open_meteo
 
+import "time"
+
 type NearestHourlyForecast struct {
 	Time                     CustomTime           `json:"time"`
 	Temperature2m            *float64             `json:"temperature_2m"`
@@ -49,6 +51,40 @@ type NearestHourlyForecast struct {
 	SoilMoisture9To27cm      *float64             `json:"soil_moisture_9_to_27cm"`
 	SoilMoisture27To81cm     *float64             `json:"soil_moisture_27_to_81cm"`
 	IsDay                    *int                 `json:"is_day"`
+}
+
+type NearestAQIHourlyForecast struct {
+	Time                       *time.Time `json:"timestamp"`
+	PM10                       *float64   `json:"pm10"`                          // μg/m³
+	PM2_5                      *float64   `json:"pm2_5"`                         // μg/m³
+	CarbonMonoxide             *float64   `json:"carbon_monoxide"`               // μg/m³
+	NitrogenDioxide            *float64   `json:"nitrogen_dioxide"`              // μg/m³
+	SulphurDioxide             *float64   `json:"sulphur_dioxide"`               // μg/m³
+	Ozone                      *float64   `json:"ozone"`                         // μg/m³
+	Ammonia                    *float64   `json:"ammonia"`                       // μg/m³
+	AerosolOpticalDepth        *float64   `json:"aerosol_optical_depth"`         // Dimensionless
+	Dust                       *float64   `json:"dust"`                          // μg/m³
+	UVIndex                    *float64   `json:"uv_index"`                      // Index
+	UVIndexClearSky            *float64   `json:"uv_index_clear_sky"`            // Index
+	AlderPollen                *float64   `json:"alder_pollen"`                  // Grains/m³
+	BirchPollen                *float64   `json:"birch_pollen"`                  // Grains/m³
+	GrassPollen                *float64   `json:"grass_pollen"`                  // Grains/m³
+	MugwortPollen              *float64   `json:"mugwort_pollen"`                // Grains/m³
+	OlivePollen                *float64   `json:"olive_pollen"`                  // Grains/m³
+	RagweedPollen              *float64   `json:"ragweed_pollen"`                // Grains/m³
+	EuropeanAQI                *float64   `json:"european_aqi"`                  // European AQI
+	EuropeanAQIPM25            *float64   `json:"european_aqi_pm2_5"`            // European AQI
+	EuropeanAQIPM10            *float64   `json:"european_aqi_pm10"`             // European AQI
+	EuropeanAQINitrogenDioxide *float64   `json:"european_aqi_nitrogen_dioxide"` // European AQI
+	EuropeanAQIOzone           *float64   `json:"european_aqi_ozone"`            // European AQI
+	EuropeanAQISulphurDioxide  *float64   `json:"european_aqi_sulphur_dioxide"`  // European AQI
+	USAQI                      *float64   `json:"us_aqi"`                        // U.S. AQI
+	USAQIPM25                  *float64   `json:"us_aqi_pm2_5"`                  // U.S. AQI
+	USAQIPM10                  *float64   `json:"us_aqi_pm10"`                   // U.S. AQI
+	USAQINitrogenDioxide       *float64   `json:"us_aqi_nitrogen_dioxide"`       // U.S. AQI
+	USAQIOzone                 *float64   `json:"us_aqi_ozone"`                  // U.S. AQI
+	USAQISulphurDioxide        *float64   `json:"us_aqi_sulphur_dioxide"`        // U.S. AQI
+	USAQICarbonMonoxide        *float64   `json:"us_aqi_carbon_monoxide"`        // U.S. AQI
 }
 
 type NearestDailyForecast struct {

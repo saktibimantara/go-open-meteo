@@ -72,3 +72,47 @@ func TestForecast(t *testing.T) {
 	t.Log(nf)
 
 }
+
+func TestAQIForecast(t *testing.T) {
+	cfg := NewConfig()
+
+	client := New(cfg)
+
+	params, err := NewAQIParamsBuilder().
+		SetLatitude(-8.68163896537287).
+		SetLongitude(115.19724863873421).
+		SetForecastDays(5).
+		AddHourlyParam(PM10, PM2_5, PM2_5, CarbonMonoxide, NitrogenDioxide, SulphurDioxide, Ozone, UVIndex).
+		Build()
+
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+		return
+	}
+
+	resp, err := client.GetAQI(params)
+
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+		return
+	}
+
+	wd := NewWeatherData().SetAQIForecastResponse(resp)
+
+	wp := NewWeatherProcessor(wd)
+
+	nf, err := wp.FindNearestAQIForecastByTime(time.Now())
+
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+		return
+	}
+
+	if nf == nil {
+		t.Log("No AQI data found")
+		return
+	}
+}

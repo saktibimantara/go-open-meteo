@@ -41,3 +41,24 @@ func (g *GoOpenMeteo) Forecast(param IForecastParams) (*ForecastResponse, error)
 
 	return &resp, nil
 }
+
+func (g *GoOpenMeteo) GetAQI(param IForecastParams) (*AQIResponse, error) {
+	url := g.config.GetAirQualityURL() + "?" + param.GetParams()
+	callResp, err := g.callApi.Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	if callResp.Code != 200 {
+		return nil, fmt.Errorf("error code: %d", callResp.Code)
+	}
+
+	var resp AQIResponse
+
+	err = json.Unmarshal(callResp.Data, &resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp, nil
+}
