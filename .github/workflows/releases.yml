@@ -17,11 +17,9 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
+          name: Release ${{ github.ref }}
           tag_name: ${{ github.ref }}
-          body: |
-            Changes in this Release
-            - First Change
-            - Second Change
+          body_path: CHANGELOG.md
           draft: false
           prerelease: false
           token: ${{ secrets.GH_TOKEN }}
