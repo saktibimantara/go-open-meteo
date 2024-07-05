@@ -25,6 +25,5 @@ jobs:
             Changes in this Release
             - First Change
             - Second Change
-          generate_release_notes: true
           draft: false
           prerelease: false
