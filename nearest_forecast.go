@@ -52,7 +52,7 @@ type NearestHourlyForecast struct {
 }
 
 type NearestDailyForecast struct {
-	Time                         CustomTime           `json:"time"`
+	Time                         CustomDate           `json:"time"`
 	Temperature2mMax             *float64             `json:"temperature_2m_max,omitempty"`
 	Temperature2mMin             *float64             `json:"temperature_2m_min,omitempty"`
 	ApparentTemperatureMax       *float64             `json:"apparent_temperature_max,omitempty"`

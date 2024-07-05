@@ -15,8 +15,32 @@ func TestForecast(t *testing.T) {
 		SetLatitude(-8.68163896537287).
 		SetLongitude(115.19724863873421).
 		SetForecastDays(16).
-		AddHourlyParam(Temperature2m, WindSpeed10m, Precipitation, Rain, WeatherCode).
-		AddMinutely15Param(Minutely15Temperature2m, Minutely15Precipitation, Minutely15Rain, Minutely15WindDirection10m, Minutely15WeatherCode).
+		AddHourlyParam(
+			Temperature2m,
+			WindSpeed10m,
+			Precipitation,
+			Rain,
+			WeatherCode,
+			WindSpeed10m,
+			WindDirection10m,
+			WindGusts10m,
+		).
+		AddMinutely15Param(
+			Minutely15Temperature2m,
+			Minutely15Precipitation,
+			Minutely15Rain,
+			Minutely15WeatherCode,
+			Minutely15RelativeHumidity2m,
+			Minutely15WindDirection10m,
+			Minutely15WindSpeed10m,
+			Minutely15WindGusts10m,
+			Minutely15ApparentTemperature,
+		).
+		AddDailyParam(
+			DailyTemperature2mMax,
+			DailyTemperature2mMin,
+			DailyWeatherCode,
+		).
 		Build()
 
 	if err != nil {

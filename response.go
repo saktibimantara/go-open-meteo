@@ -100,7 +100,7 @@ type Minutely15Response struct {
 }
 
 type DailyResponse struct {
-	Time                         []CustomTime          `json:"time"`
+	Time                         []CustomDate          `json:"time"`
 	Temperature2mMax             []float64             `json:"temperature_2m_max"`
 	Temperature2mMin             []float64             `json:"temperature_2m_min"`
 	ApparentTemperatureMax       []float64             `json:"apparent_temperature_max"`
@@ -129,7 +129,7 @@ type DailyResponse struct {
 
 func (f *ForecastResponse) FindNearestHourlyResponse(dateTime time.Time) *NearestHourlyForecast {
 	hourly := f.Hourly
-	closestIndex := findClosestIndex(hourly.Time, dateTime)
+	closestIndex := findClosestIndexByCustomTime(hourly.Time, dateTime)
 
 	return &NearestHourlyForecast{
 		Time:                     hourly.Time[closestIndex],
@@ -185,7 +185,7 @@ func (f *ForecastResponse) FindNearestHourlyResponse(dateTime time.Time) *Neares
 
 func (f *ForecastResponse) FindNearestMinute15Response(dateTime time.Time) *NearestMinute15Forecast {
 	minutely15 := f.Minutely15
-	closestIndex := findClosestIndex(minutely15.Time, dateTime)
+	closestIndex := findClosestIndexByCustomTime(minutely15.Time, dateTime)
 
 	return &NearestMinute15Forecast{
 		Time:                          minutely15.Time[closestIndex],
@@ -220,7 +220,7 @@ func (f *ForecastResponse) FindNearestMinute15Response(dateTime time.Time) *Near
 
 func (f *ForecastResponse) FindNearestDailyResponse(dateTime time.Time) *NearestDailyForecast {
 	daily := f.Daily
-	closestIndex := findClosestIndex(daily.Time, dateTime)
+	closestIndex := findClosestIndexByCustomDate(daily.Time, dateTime)
 
 	return &NearestDailyForecast{
 		Time:                         daily.Time[closestIndex],
@@ -251,12 +251,13 @@ func (f *ForecastResponse) FindNearestDailyResponse(dateTime time.Time) *Nearest
 	}
 }
 
-func findClosestIndex(times []CustomTime, target time.Time) int {
+// General function to find the closest index
+func findClosestIndex(times []time.Time, target time.Time) int {
 	var closestIndex int
 	minDiff := time.Duration(math.MaxInt64)
 
 	for i, t := range times {
-		diff := math.Abs(float64(target.Sub(t.Time)))
+		diff := math.Abs(float64(target.Sub(t)))
 		if time.Duration(diff) < minDiff {
 			minDiff = time.Duration(diff)
 			closestIndex = i
@@ -266,7 +267,26 @@ func findClosestIndex(times []CustomTime, target time.Time) int {
 	return closestIndex
 }
 
+// Wrapper function for CustomTime
+func findClosestIndexByCustomTime(times []CustomTime, target time.Time) int {
+	timesAsTime := make([]time.Time, len(times))
+	for i, t := range times {
+		timesAsTime[i] = t.Time
+	}
+	return findClosestIndex(timesAsTime, target)
+}
+
+// Wrapper function for CustomDate
+func findClosestIndexByCustomDate(times []CustomDate, target time.Time) int {
+	timesAsTime := make([]time.Time, len(times))
+	for i, t := range times {
+		timesAsTime[i] = t.Time
+	}
+	return findClosestIndex(timesAsTime, target)
+}
+
 const customTimeFormat = "2006-01-02T15:04"
+const customDateFormat = "2006-01-02"
 
 // UnmarshalJSON method to parse the custom time format
 func (ct *CustomTime) UnmarshalJSON(b []byte) error {
@@ -282,6 +302,25 @@ func (ct *CustomTime) UnmarshalJSON(b []byte) error {
 
 	ct.Time = parsedTime
 	return nil
+}
+
+func (ct *CustomDate) UnmarshalJSON(b []byte) error {
+	// Remove the surrounding quotes from the JSON string
+	timeString := string(b)
+	timeString = timeString[1 : len(timeString)-1]
+
+	// Parse the time string using the custom format
+	parsedTime, err := time.Parse(customDateFormat, timeString)
+	if err != nil {
+		return err
+	}
+
+	ct.Time = parsedTime
+	return nil
+}
+
+type CustomDate struct {
+	time.Time
 }
 
 type CustomTime struct {
