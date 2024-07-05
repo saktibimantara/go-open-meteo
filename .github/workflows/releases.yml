@@ -8,22 +8,22 @@ on:
 
 jobs:
   create-release:
-    name: Create Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Get the tag name
-        id: get_tag_name
-        run: echo "::set-output name=tag_name::${GITHUB_HEAD_REF}"
+      - name: Extract Tag
+        id: extract_tag
+        run: |
+          echo "TAG_NAME=$(echo ${{ github.event.workflow_run.head_commit.message }} | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+')" >> $GITHUB_ENV
 
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event.workflow_run.head_commit.message }}
-          name: Release ${{ github.event.workflow_run.head_commit.message }}
+          tag_name: ${{ env.TAG_NAME }}
+          name: Release ${{ env.TAG_NAME }}
           body_path: CHANGELOG.md
           draft: false
           prerelease: false
