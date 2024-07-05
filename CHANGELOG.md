@@ -1,1 +1,1 @@
-Test Release Note
+Update workflow to update release note

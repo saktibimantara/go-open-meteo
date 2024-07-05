@@ -1,15 +1,32 @@
+name: Create Release
+
 on:
   workflow_run:
-    workflows: [ "Build and Test" ]
+    workflows: ["Build and Test"]
     types:
       - completed
 
-name: Create Release
-
 jobs:
-  build:
+  create-release:
     name: Create Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Get the tag name
+        id: get_tag_name
+        run: echo "::set-output name=tag_name::${GITHUB_HEAD_REF}"
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.workflow_run.head_commit.message }}
+          name: Release ${{ github.event.workflow_run.head_commit.message }}
+          body_path: CHANGELOG.md
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GH_TOKEN }}
+          generate_release_notes: true
+          make_latest: true
