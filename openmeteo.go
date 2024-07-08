@@ -18,6 +18,7 @@ func New(config *Config) *GoOpenMeteo {
 
 type IGoOpenMeteo interface {
 	Forecast(param IForecastParams) (*ForecastResponse, error)
+	GetAQI(param IForecastParams) (*AQIResponse, error)
 }
 
 func (g *GoOpenMeteo) Forecast(param IForecastParams) (*ForecastResponse, error) {
