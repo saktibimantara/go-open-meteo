@@ -46,7 +46,7 @@ type NearestForecast struct {
 	HourlyForecast     *NearestHourlyForecast
 	Minutely15Forecast *NearestMinute15Forecast
 	DailyForecast      *NearestDailyForecast
-	aqiHourlyForecast  *NearestAQIHourlyForecast
+	AqiHourlyForecast  *NearestAQIHourlyForecast
 }
 
 func NewWeatherProcessor(data IWeatherData) *WeatherProcessor {
@@ -91,7 +91,7 @@ func (w *WeatherProcessor) FindNearestAQIForecastByTime(dateTime time.Time) (*Ne
 	}
 
 	if w.aqiResp.Hourly != nil {
-		nearestForecast.aqiHourlyForecast = w.aqiResp.FindNearestAQIHourlyResponse(dateTime)
+		nearestForecast.AqiHourlyForecast = w.aqiResp.FindNearestAQIHourlyResponse(dateTime)
 	}
 
 	return nearestForecast, nil
