@@ -50,7 +50,7 @@ type NearestHourlyForecast struct {
 	SoilMoisture3To9cm       *float64             `json:"soil_moisture_3_to_9cm"`
 	SoilMoisture9To27cm      *float64             `json:"soil_moisture_9_to_27cm"`
 	SoilMoisture27To81cm     *float64             `json:"soil_moisture_27_to_81cm"`
-	IsDay                    *int                 `json:"is_day"`
+	IsDay                    *float64             `json:"is_day"`
 }
 
 type NearestAQIHourlyForecast struct {

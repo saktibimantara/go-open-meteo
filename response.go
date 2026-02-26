@@ -109,7 +109,7 @@ type HourlyResponse struct {
 	SoilMoisture3To9cm       []float64             `json:"soil_moisture_3_to_9cm"`
 	SoilMoisture9To27cm      []float64             `json:"soil_moisture_9_to_27cm"`
 	SoilMoisture27To81cm     []float64             `json:"soil_moisture_27_to_81cm"`
-	IsDay                    []int                 `json:"is_day"`
+	IsDay                    []float64             `json:"is_day"`
 }
 
 type Minutely15Response struct {
@@ -222,7 +222,7 @@ func (f *ForecastResponse) FindNearestHourlyResponse(dateTime time.Time) *Neares
 		SoilMoisture3To9cm:       safeGetFloat64(hourly.SoilMoisture3To9cm, closestIndex),
 		SoilMoisture9To27cm:      safeGetFloat64(hourly.SoilMoisture9To27cm, closestIndex),
 		SoilMoisture27To81cm:     safeGetFloat64(hourly.SoilMoisture27To81cm, closestIndex),
-		IsDay:                    safeGetInt(hourly.IsDay, closestIndex),
+		IsDay:                    safeGetFloat64(hourly.IsDay, closestIndex),
 	}
 }
 
